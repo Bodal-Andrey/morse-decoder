@@ -38,46 +38,45 @@ const MORSE_TABLE = {
 };
 
 function decode(expr) {
-    const getKeyByValue = (object, value) => {
-        return Object.keys(object).find(key => object[key] === value);
-    };
-    const arr = expr.split(``).map(item => getKeyByValue(MORSE_TABLE, item));
+    const firstArr = expr.split(``);
 
-    const newArr = arr.map(item => item === undefined ? `**********` : item);
+    const secondArr = firstArr.reduce(function (result, value, index) {
+        if (index % 10 === 0)
+            result.push(firstArr.slice(index, index + 10));
 
-    const result = newArr.map(item => {
-        const secondArr = [];
-        for (let i = 0; i < item.length; i++) {
-            if (item[i] === `*`) {
-                secondArr.push(`*`);
+        return result;
+    }, []);
+
+    const thirdArr = secondArr.map(item => + item.join(``));
+
+    const fourthArr = thirdArr.join().split(`,`).map(item => item === `NaN` ? `**` : item);
+
+    const fifthArr = fourthArr.map(item => item.match(/.{1,2}/g));
+    
+    const firstFun = (data) => {
+        let seventhArr = [];
+        for (let i = 0; i < data.length; i++) {
+            
+            if (data[i] === `10`) {
+                seventhArr.push(`.`);
             }
-
-            if (item[i] === `-`) {
-                secondArr.push(11);
+            if (data[i] === `11`) {
+                seventhArr.push(`-`);
             }
-            if (item[i] === `.`) {
-                secondArr.push(10);
+            if (data[i] === `**`) {
+                seventhArr.push(``);
             }
         }
-        const thirdArr = secondArr.join(``);
-        let fourthArr = new Array(thirdArr);
+        return seventhArr.join(``);
+    };
 
-        const sixArr = fourthArr.map(item => {
-            if (item.length < 10) {
-                let seventhArr = item.split(``);
+    const sixArr = fifthArr.map(item => firstFun(item));
+    
+    const eighthArr = sixArr.map(item => MORSE_TABLE[item]);
+    
+    const phraze = eighthArr.map(item => item === undefined ? ` ` : item).join(``);
 
-                for (let i = 0; i < 10 - seventhArr.length; i) {
-                    seventhArr.unshift(`0`);
-                }
-                return seventhArr.join(``);
-            } else {
-                return item;
-            }
-
-        });
-        return sixArr;
-    });
-    return result.join(``);
+    return phraze;
 }
 
 module.exports = {
